@@ -79,7 +79,7 @@ int main(int argc, char **argv)
     }
     printf("\n");
     printf("totalLen: %d\n", totalLen);
-    int* boarder = (int *)malloc(sizeof(int) * CEIL(totalLen, warpSize));
+    int* boarder = (int *)malloc(sizeof(int) * (1 + CEIL(totalLen, warpSize)));
     // oriData = (int *)malloc(sizeof(int) * totalLen);
     testData = (int *)malloc(sizeof(int) * totalLen);
     castData = (int *)malloc(totalLen * sizeof(int));
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
     }
     for (int i = 0; i < lists; i++)
     {
-        delete [] dataPointer[i];
+        // delete [] dataPointer[i];
         cudaFree(&devDataPointer[i]);
     }
    
@@ -141,9 +141,10 @@ int main(int argc, char **argv)
     delete[] listNum;
     free(testData);
     free(sortData);
+    
     free(castData);
     free(boarder);
-
+    
     cudaFree(devOut);                 
     cudaFree(devSortData);
     cudaFree(devBoarder);
