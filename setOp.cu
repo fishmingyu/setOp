@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     int numData = atoi(argv[1]); // the number of parallel threads
     int lists = atoi(argv[2]);
     int modW = atoi(argv[3]);            
-    int numLists = diWarp(numData);
+    int threads = diWarp(numData);
     int totalLen = 0;
     std::vector<int> sortNo, state, permute, cast;
     int *out = new int[1];
@@ -33,13 +33,13 @@ int main(int argc, char **argv)
     int *testData = 0;
     // int *oriData;
     int *devSrcData = 0;
-    int **dataPointer = new int *[MAX_NUM_LISTS];
+    int **dataPointer = new int *[MAXSHARE];
     int **devDataPointer = 0;
     int *castData, *sortData;
     int *devSortData, *devBoarder, *devCastData, *devOriData;
     bool check = true;
     listNum[0] = 0;
-    cudaMalloc((void **)&devDataPointer, sizeof(int *) * MAX_NUM_LISTS);
+    cudaMalloc((void **)&devDataPointer, sizeof(int *) * MAXSHARE);
     cudaMalloc((void **)&devListNum, sizeof(int *) * (lists + 1));
     srand(0);
 
@@ -95,7 +95,7 @@ int main(int argc, char **argv)
     cudaMalloc((void **)&devBoarder, sizeof(int) * (1 + CEIL(totalLen, warpSize)));
     
     setOp(devDataPointer, devOriData, devSrcData, devSortData, devCastData, devOut,
-          devListNum, devBoarder, numLists, lists, totalLen, blockNum, modW);
+          devListNum, devBoarder, threads, lists, totalLen, blockNum, modW);
 
     cudaMemcpy(castData, devCastData, sizeof(int) * totalLen, cudaMemcpyDeviceToHost);
     cudaMemcpy(sortData, devSortData, sizeof(int) * totalLen, cudaMemcpyDeviceToHost);
@@ -143,7 +143,6 @@ int main(int argc, char **argv)
     free(sortData);
     free(castData);
     free(boarder);
-
 
     cudaFree(devOut);                 
     cudaFree(devSortData);

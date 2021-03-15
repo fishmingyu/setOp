@@ -1,6 +1,6 @@
 #include <cuda_runtime.h>
 #include "device_launch_parameters.h"
-#define MAX_NUM_LISTS 100
+#define MAXSHARE 100
 #define MAX_THREADS 64
 #define warpSize 32
 #define MAXLISTS 100
@@ -74,9 +74,9 @@ __device__ void radixSort(int *const srcData, int *const destData,
 __device__ void mergeDedup(const int *srcData, int *const dest_list, int numLists, int numData, int *outNum, int tid)
 {
     int nPerList = CEIL(numData, numLists);
-    __shared__ int listIdx[MAX_NUM_LISTS];
-    __shared__ int reducVal[MAX_NUM_LISTS];
-    __shared__ int reducIdx[MAX_NUM_LISTS];
+    __shared__ int listIdx[MAXSHARE];
+    __shared__ int reducVal[MAXSHARE];
+    __shared__ int reducIdx[MAXSHARE];
 
     listIdx[tid] = 0;
     reducVal[tid] = 0;
@@ -166,7 +166,6 @@ __global__ void find(int *const srcData, int *const orderData, int *const destDa
         int idx = biSearch(boarderNum, srcData[tid], 0, CEIL(numData[0], warpSize));
         int idx2 = biSearch(orderData, srcData[tid], idx * warpSize, MIN(((idx + 1) * warpSize), numData[0] - 1));
         destData[tid] = idx2 % modW;
-        int idx3 = biSearch(orderData, srcData[tid], 0, numData[0] - 1);
     }
 }
 
