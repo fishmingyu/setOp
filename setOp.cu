@@ -130,7 +130,7 @@ int main(int argc, char **argv)
     }
     for (int i = 0; i < lists; i++)
     {
-        // delete [] dataPointer[i];
+        delete [] dataPointer[i];
         cudaFree(&devDataPointer[i]);
     }
    
